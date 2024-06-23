@@ -1,30 +1,24 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import {useAtomValue, useSetAtom} from "jotai/react";
+import {AddBookmarkAtom, ReadOnlyBookmarksAtom} from "./GeneralAtomsStore";
 
 function App() {
     const [newBookmarkTitle, setNewBookmarkTitle] = React.useState('');
     const [newBookmarkUrl, setNewBookmarkUrl] = React.useState('');
 
-    const [bookmarkItems, setBookmarkItems] = React.useState<browser.bookmarks.BookmarkTreeNode[]>([]);
+    const bookmarkItems = useAtomValue(ReadOnlyBookmarksAtom);
 
-    useEffect(() => {
-        fetchBookmarks();
-    }, []);
-
-    function fetchBookmarks() {
-        browser.bookmarks.getTree().then(bookmarkItems => {
-            setBookmarkItems(bookmarkItems);
-        });
-    }
-
-    function addBookmarkButtonHandler() {
+    const AddBookmark = useSetAtom(AddBookmarkAtom);
+    async function addBookmarkButtonHandler() {
 
         if (newBookmarkTitle && newBookmarkUrl) {
-            browser.bookmarks.create({
+            await AddBookmark({
                 title: newBookmarkTitle,
                 url: newBookmarkUrl
-            }).then(fetchBookmarks);
+            });
+
         }
     }
     console.log(bookmarkItems);
