@@ -13,13 +13,14 @@ Basic idea, a new tab page that allows you to manage your bookmarks. And display
 ## Todo
 - [x] POC - basic functionality achieved (tested in firefox)
 - [ ] Basic UI, functionality and manifest
-- [ ] Improved state-management with jotai (for things like saving settings etc)
+- [x] Improved state-management with jotai (for things like saving settings etc)
 - [ ] Improved UI using TailwindCSS
 - [ ] [CI/CD - chrome](https://jam.dev/blog/automating-chrome-extension-publishing/)
 - [ ] [CI/CD - firefox](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Getting_started_with_web-ext)
  
-
-
+### Some links
+- [Medium - Creating a Chrome extension with React and Typescript](https://medium.com/@ahsan-ali-mansoor/creating-a-chrome-extension-with-react-and-typescript-1378cc9f29ef)
+- [Medium - Chrome Extension with Typescript](https://medium.com/@doublekien/chrome-extension-with-typescript-1589aa84e80)
 # Below you will find the default README for a create-react-app project
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
