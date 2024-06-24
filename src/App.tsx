@@ -1,16 +1,20 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import {useAtomValue, useSetAtom} from "jotai/react";
-import {AddBookmarkAtom, ReadOnlyBookmarksAtom} from "./GeneralAtomsStore";
+import {useAtomValue, useSetAtom, useAtom} from "jotai/react";
+import {AddBookmarkAtom, DarkModeAtom, EditModeAtom, ReadOnlyBookmarksAtom} from "./GeneralAtomsStore";
+import {Navbar} from "./Navbar/Navbar";
 
 function App() {
+    const darkMode = useAtomValue(DarkModeAtom);
+
     const [newBookmarkTitle, setNewBookmarkTitle] = React.useState('');
     const [newBookmarkUrl, setNewBookmarkUrl] = React.useState('');
 
     const bookmarkItems = useAtomValue(ReadOnlyBookmarksAtom);
 
     const AddBookmark = useSetAtom(AddBookmarkAtom);
+
     async function addBookmarkButtonHandler() {
 
         if (newBookmarkTitle && newBookmarkUrl) {
@@ -21,11 +25,13 @@ function App() {
 
         }
     }
+
     console.log(bookmarkItems);
 
 
     return (
-        <div className="App">
+        <div className={"App " + (darkMode ? "dark" : "")}>
+            <Navbar/>
             {/*<header className="App-header">*/}
             {/*    <img src={logo} className="App-logo" alt="logo"/>*/}
             {/*    <p>*/}
@@ -40,7 +46,7 @@ function App() {
             {/*        Learn React*/}
             {/*    </a>*/}
             {/*</header>*/}
-
+            <DarkModeTest/>
             <div>
                 <div id="bookmarks">
                     {bookmarkItems.map(bookmarkItem => {
@@ -107,6 +113,8 @@ function BookmarkFolder({bookmarkTreeNode}: { bookmarkTreeNode: browser.bookmark
 
 function BookmarkElement({bookmark}: { bookmark: browser.bookmarks.BookmarkTreeNode }) {
 
+    const [editMode, setEditMode] = useAtom(EditModeAtom);
+
     if (bookmark.type !== 'bookmark') {
         throw new Error('BookmarkElement component can only render bookmark type');
     }
@@ -120,7 +128,11 @@ function BookmarkElement({bookmark}: { bookmark: browser.bookmarks.BookmarkTreeN
         <span>{bookmark.title}</span>
         <div>
             <a href={bookmark.url} target="_blank" rel={"noreferrer"}>Visit</a>
-            <button data-id="bookmark.id" onClick={RemoveBookmarkButtonHandler}>Remove</button>
+            <button data-id="bookmark.id"
+                    style={{
+                        display: editMode ? 'none' : 'block'
+                    }} onClick={RemoveBookmarkButtonHandler}>Remove
+            </button>
         </div>
     </>
 }
@@ -133,7 +145,7 @@ function DebugInfo({bookmark}: { bookmark: browser.bookmarks.BookmarkTreeNode })
         <button onClick={() => setShowDebugInfo(!showDebugInfo)}>Toggle Debug Info</button>
         {showDebugInfo && <>
             <span>id: {bookmark.id}</span><br/>
-            <span>type:  {bookmark.type}</span><br/>
+            <span>type: {bookmark.type}</span><br/>
             <span>url: {bookmark.url}</span><br/>
             <span>title: {bookmark.title}</span><br/>
             <span>dateAdded: {bookmark.dateAdded}</span><br/>
@@ -142,6 +154,22 @@ function DebugInfo({bookmark}: { bookmark: browser.bookmarks.BookmarkTreeNode })
             <span>parentId: {bookmark.parentId}</span><br/>
             <span>unmodifiable: {bookmark.unmodifiable}</span></>}
     </>
+}
+
+function DarkModeTest() {
+    return <div className="bg-white dark:bg-slate-800 rounded-lg px-6 py-8 ring-1 ring-slate-900/5 shadow-xl">
+        <div>
+    <span className="inline-flex items-center justify-center p-2 bg-indigo-500 rounded-md shadow-lg">
+      <svg className="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+           stroke="currentColor" aria-hidden="true"></svg>
+    </span>
+        </div>
+        <h3 className="text-slate-900 dark:text-white mt-5 text-base font-medium tracking-tight">Writes Upside-Down</h3>
+        <p className="text-slate-500 dark:text-slate-400 mt-2 text-sm">
+            The Zero Gravity Pen can be used to write in any orientation, including upside-down. It even works in outer
+            space.
+        </p>
+    </div>;
 }
 
 export default App;

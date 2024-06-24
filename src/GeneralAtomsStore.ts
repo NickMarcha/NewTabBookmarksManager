@@ -71,3 +71,4 @@ export const MoveBookmarkAtom = atom(
 //storage atom with Record<string, BookmarkExtraInfo>
 const bookmarkExtraInfoAtom = atomWithStorage<Record<string, BookmarkExtraInfo>>('bookmarkExtraInfo', {});
 
+export const EditModeAtom = atom(false);
