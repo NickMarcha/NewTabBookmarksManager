@@ -12,9 +12,10 @@ Basic idea, a new tab page that allows you to manage your bookmarks. And display
 
 ## Todo
 - [x] POC - basic functionality achieved (tested in firefox)
-- [ ] Basic UI, functionality and manifest
+- [x] Basic UI, functionality and manifest
 - [x] Improved state-management with jotai (for things like saving settings etc)
-- [ ] Improved UI using TailwindCSS
+- [x] Using TailwindCSS
+- [ ] Move over to manifest? (Shad cn needs absolute paths)
 - [ ] [CI/CD - chrome](https://jam.dev/blog/automating-chrome-extension-publishing/)
 - [ ] [CI/CD - firefox](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Getting_started_with_web-ext)
  
