@@ -1,5 +1,11 @@
 import {useAtomValue, useSetAtom} from "jotai/react";
-import {EditModeAtom, ReadOnlyBookmarksAtom, UpdateBookmarkAtom} from "../GeneralAtomsStore";
+import {
+    AddBookmarkAtom,
+    EditModeAtom,
+    ReadOnlyBookmarksAtom,
+    SearchQueryAtom,
+    UpdateBookmarkAtom
+} from "../GeneralAtomsStore";
 import React from "react";
 import {ClickToCopySpan} from "../common/ClickToCopySpan";
 
@@ -7,7 +13,8 @@ export function BookMarks() {
     const bookmarkItems = useAtomValue(ReadOnlyBookmarksAtom);
 
     return (
-        <div id="bookmarks">
+        <div
+            className={"mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 border-t border-gray-200  lg:mx-0 lg:max-w-none lg:grid-cols-3"}>
             {bookmarkItems.map(bookmarkItem => {
                 return <TreeNode key={bookmarkItem.id} bookmarkTreeNode={bookmarkItem}/>
             })}
@@ -35,18 +42,64 @@ function TreeNode({bookmarkTreeNode}: { bookmarkTreeNode: browser.bookmarks.Book
 }
 
 function BookmarkFolder({bookmarkTreeNode}: { bookmarkTreeNode: browser.bookmarks.BookmarkTreeNode }) {
+    const editMode = useAtomValue(EditModeAtom);
+    const addBookmark = useSetAtom(AddBookmarkAtom);
+    const [newBookmarkTitle, setNewBookmarkTitle] = React.useState("");
+    const [newBookmarkUrl, setNewBookmarkUrl] = React.useState("");
+    const [isCollapsed, setIsCollapsed] = React.useState(false);
+    const searchQuery = useAtomValue(SearchQueryAtom);
+
     if (bookmarkTreeNode.type !== 'folder' || !bookmarkTreeNode.children) {
         throw new Error('BookmarkFolder component can only render folder type');
     }
 
-    return <div className={"bookmark-folder"}>
-        <strong>{bookmarkTreeNode.title}</strong>
+    function getFilteredChildren() {
+        if(bookmarkTreeNode.children === undefined
+            ||bookmarkTreeNode.children?.length === 0
+        ) {
+            return [];
+        }
+        return bookmarkTreeNode.children.filter(bookmark => {
+            if(searchQuery === ""||bookmark.type !== 'bookmark' ) {
+                return true;
+            }
+            return bookmark.title.toLowerCase().includes(searchQuery.toLowerCase());
+        });
+    }
 
-        <div>
-            {bookmarkTreeNode.children.map(bookmark => {
-                return <TreeNode key={bookmark.id} bookmarkTreeNode={bookmark}/>
-            })}
-        </div>
+    return <div className={"flex max-w-xl flex-col items-start justify-between"}>
+        <strong
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        >{bookmarkTreeNode.title}</strong>
+
+        {!isCollapsed && (<>
+            <div>
+                {getFilteredChildren().length>0 && getFilteredChildren().map(bookmark => {
+                    return <TreeNode key={bookmark.id} bookmarkTreeNode={bookmark}/>
+                })}
+
+                {getFilteredChildren().length === 0 && <div>{searchQuery === "" ?"...":"No Search results"}</div>}
+            </div>
+            {editMode && <div>
+                <label>Title</label>
+                <input className={""} value={newBookmarkTitle}
+                       onChange={(value) => setNewBookmarkTitle(value.target.value)}/>
+                <label>URL</label>
+                <input className={""} value={newBookmarkUrl}
+                       onChange={(value) => setNewBookmarkUrl(value.target.value)}/>
+                <button onClick={() => {
+                    addBookmark({
+                        parentId: bookmarkTreeNode.id,
+                        title: newBookmarkTitle,
+                        url: newBookmarkUrl
+                    });
+                    setNewBookmarkTitle("");
+                    setNewBookmarkUrl("");
+                }}>Add Bookmark
+                </button>
+            </div>}
+        </>)}
+
     </div>
 }
 
@@ -65,7 +118,7 @@ function BookmarkElement({bookmark}: { bookmark: browser.bookmarks.BookmarkTreeN
         await browser.bookmarks.remove(bookmark.id);
     }
 
-    return <div className={"bookmark-element"}>
+    return <div className={"flex max-w-xl flex-col items-start justify-between border-2 border-sky-500"}>
         {editMode && (
             <>
                 <input className={""} value={bookmark.title} onChange={async (value) => {
@@ -88,7 +141,7 @@ function BookmarkElement({bookmark}: { bookmark: browser.bookmarks.BookmarkTreeN
                            })
                        }}
                 />
-<button onClick={RemoveBookmarkButtonHandler}>Remove</button>
+                <button onClick={RemoveBookmarkButtonHandler}>Remove</button>
             </>
         )
         }
@@ -100,7 +153,6 @@ function BookmarkElement({bookmark}: { bookmark: browser.bookmarks.BookmarkTreeN
                 </>
             )
         }
-        <span>{bookmark.title}</span>
     </div>
 }
 

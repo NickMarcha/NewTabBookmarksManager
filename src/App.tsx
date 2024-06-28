@@ -1,10 +1,11 @@
 import React from 'react';
-/*import logo from './logo.svg';*/
 import './App.css';
 import {useAtomValue} from "jotai/react";
 import {DarkModeAtom} from "./GeneralAtomsStore";
 import {Navbar} from "./Navbar/Navbar";
 import {BookMarks} from "./Bookmarks/Bookmarks";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
     console.log('env is:', process.env.NODE_ENV);
@@ -14,6 +15,7 @@ function App() {
         <div className={"App " + (darkMode ? "dark" : "")}>
             <Navbar/>
             <BookMarks/>
+            <ToastContainer />
         </div>
     );
 }
